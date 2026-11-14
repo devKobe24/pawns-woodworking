@@ -90,6 +90,7 @@ const posts = (await getCollection('blog')).sort(
 		<Header />
 		<main>
 			<section>
+				{posts.length === 0 && <p>아직 발행한 글이 없습니다. 첫 목공 기록을 준비하고 있습니다.</p>}
 				<ul>
 					{posts.map((post) => (
 						<li>
