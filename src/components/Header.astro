@@ -26,7 +26,7 @@ import HeaderLink from './HeaderLink.astro';
 	header {
 		margin: 0;
 		padding: 0 1em;
-		background: white;
+		background: var(--paper);
 		box-shadow: 0 2px 8px rgba(var(--black), 5%);
 	}
 	h2 {
@@ -45,7 +45,7 @@ import HeaderLink from './HeaderLink.astro';
 	}
 	nav a {
 		padding: 1em 0.5em;
-		color: var(--black);
+		color: rgb(var(--black));
 		border-bottom: 4px solid transparent;
 		text-decoration: none;
 	}
@@ -60,6 +60,23 @@ import HeaderLink from './HeaderLink.astro';
 	@media (max-width: 720px) {
 		.social-links {
 			display: none;
+		}
+		/* Stack the site name above the menu so neither wraps on phones. */
+		nav {
+			flex-direction: column;
+			align-items: flex-start;
+		}
+		h2 a {
+			display: block;
+			padding: 0.75em 0 0.25em;
+		}
+		.internal-links {
+			display: flex;
+			gap: 0.5em;
+			margin-left: -0.5em;
+		}
+		.internal-links a {
+			padding: 0.5em;
 		}
 	}
 </style>
