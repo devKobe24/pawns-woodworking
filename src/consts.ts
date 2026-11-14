@@ -2,5 +2,5 @@
 // You can import this data from anywhere in your site by using the `import` keyword.
 
 export const SITE_TITLE = "Pawn's Woodworking Studio";
-export const SITE_DESCRIPTION = '목공 작업과 작품을 기록하는 블로그입니다.';
+export const SITE_DESCRIPTION = '나무로 가구와 소품을 만들며 배운 것을 기록하는 블로그입니다.';
 export const INSTAGRAM_URL = 'https://www.instagram.com/pawn.wood/';
