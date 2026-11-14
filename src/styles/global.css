@@ -5,13 +5,15 @@
  */
 
 :root {
-	--accent: #2337ff;
-	--accent-dark: #000d8a;
-	--black: 15, 18, 25;
-	--gray: 96, 115, 159;
-	--gray-light: 229, 233, 240;
-	--gray-dark: 34, 41, 57;
-	--gray-gradient: rgba(var(--gray-light), 50%), #fff;
+	/* Brand colors sampled from src/assets/pawns-woodworking-og.jpg */
+	--accent: #2f6a45;
+	--accent-dark: #112315;
+	--black: 17, 35, 21;
+	--gray: 110, 93, 78;
+	--gray-light: 244, 232, 216;
+	--gray-dark: 45, 38, 32;
+	--paper: #fffcf7;
+	--gray-gradient: rgba(var(--gray-light), 60%), var(--paper);
 	--box-shadow:
 		0 2px 6px rgba(var(--gray), 25%), 0 8px 24px rgba(var(--gray), 33%),
 		0 16px 32px rgba(var(--gray), 33%);
@@ -22,9 +24,12 @@ body {
 	padding: 0;
 	text-align: left;
 	background: linear-gradient(var(--gray-gradient)) no-repeat;
+	background-color: var(--paper);
 	background-size: 100% 600px;
 	word-wrap: break-word;
 	overflow-wrap: break-word;
+	/* Break Korean text at spaces, not between syllables. */
+	word-break: keep-all;
 	color: rgb(var(--gray-dark));
 	font-size: 20px;
 	line-height: 1.7;
@@ -68,7 +73,7 @@ a {
 	color: var(--accent);
 }
 a:hover {
-	color: var(--accent);
+	color: var(--accent-dark);
 }
 p {
 	margin-bottom: 1em;
@@ -119,6 +124,12 @@ hr {
 	}
 	main {
 		padding: 1em;
+	}
+	h1 {
+		font-size: 2.2em;
+	}
+	h2 {
+		font-size: 1.8em;
 	}
 }
 
