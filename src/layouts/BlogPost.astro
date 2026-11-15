@@ -6,9 +6,10 @@ import Footer from '../components/Footer.astro';
 import FormattedDate from '../components/FormattedDate.astro';
 import Header from '../components/Header.astro';
 
-type Props = CollectionEntry<'blog'>['data'];
+// slug is set for blog posts only; it turns on the view counter.
+type Props = CollectionEntry<'blog'>['data'] & { slug?: string };
 
-const { title, description, pubDate, updatedDate, heroImage } = Astro.props;
+const { title, description, pubDate, updatedDate, heroImage, slug } = Astro.props;
 ---
 
 <html lang="ko">
@@ -79,6 +80,11 @@ const { title, description, pubDate, updatedDate, heroImage } = Astro.props;
 				<div class="title">
 					<p class="meta">
 						<FormattedDate date={pubDate} />
+						{slug && (
+							<span class="views" data-slug={slug} hidden>
+								· 조회 <span class="count" />
+							</span>
+						)}
 					</p>
 					<h1>{title}</h1>
 					<p class="dek">{description}</p>
@@ -99,5 +105,26 @@ const { title, description, pubDate, updatedDate, heroImage } = Astro.props;
 			</article>
 		</main>
 		<Footer />
+		<script>
+			// Count one view per browser session, then show the total. Stays hidden if the API is unavailable.
+			const views = document.querySelector<HTMLElement>('.views');
+			if (views) {
+				const key = `viewed:${views.dataset.slug}`;
+				let counted = false;
+				try {
+					counted = sessionStorage.getItem(key) !== null;
+				} catch {}
+				fetch(`/api/views/${views.dataset.slug}`, { method: counted ? 'GET' : 'POST' })
+					.then((res) => (res.ok ? res.json() : Promise.reject(res.status)))
+					.then(({ count }) => {
+						try {
+							sessionStorage.setItem(key, '1');
+						} catch {}
+						views.querySelector('.count')!.textContent = count.toLocaleString('ko-KR');
+						views.hidden = false;
+					})
+					.catch(() => {});
+			}
+		</script>
 	</body>
 </html>
