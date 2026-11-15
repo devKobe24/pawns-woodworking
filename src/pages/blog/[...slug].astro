@@ -1,5 +1,6 @@
 ---
 import { type CollectionEntry, render } from 'astro:content';
+import Comments from '../../components/Comments.astro';
 import BlogPost from '../../layouts/BlogPost.astro';
 import { getPosts } from '../../posts';
 
@@ -18,4 +19,5 @@ const { Content } = await render(post);
 
 <BlogPost {...post.data}>
 	<Content />
+	<Comments />
 </BlogPost>
