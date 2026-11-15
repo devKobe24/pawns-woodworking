@@ -1,7 +1,8 @@
 ---
 title: '물과 나무'
 description: '목재가 습도에 따라 수분을 머금고 내뱉으며 방향별로 다르게 늘고 줄어드는 이유와, 함수율·기건 함수율·부재의 개념을 공부했습니다.'
-pubDate: '2026-11-15'
+pubDate: '2026-11-15T14:13'
+heroImage: '../images/water-and-wood.png'
 draft: false
 ---
 
