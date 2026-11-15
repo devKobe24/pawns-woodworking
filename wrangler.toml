@@ -1,0 +1,18 @@
+# Cloudflare Pages config: static site in dist/, API in functions/, data in D1.
+name = "pawns-woodworking"
+pages_build_output_dir = "./dist"
+compatibility_date = "2026-10-01"
+
+# Production (main branch)
+[[d1_databases]]
+binding = "DB"
+database_name = "pawns-woodworking"
+database_id = "884c481f-21d9-444f-9df9-10466edf776c"
+migrations_dir = "migrations"
+
+# PR previews write to a separate database so testing never touches real data.
+[[env.preview.d1_databases]]
+binding = "DB"
+database_name = "pawns-woodworking-preview"
+database_id = "4eb3b318-6431-4249-9571-6900c57cdf10"
+migrations_dir = "migrations"
