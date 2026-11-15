@@ -16,41 +16,53 @@ const { title, description, pubDate, updatedDate, heroImage } = Astro.props;
 		<BaseHead title={title} description={description} />
 		<style>
 			main {
-				width: calc(100% - 2em);
-				max-width: 100%;
-				margin: 0;
+				width: 960px;
 			}
-			.hero-image {
-				width: 100%;
+			.title {
+				max-width: 720px;
+				margin: 0 auto 2.5em;
+				padding-bottom: 2em;
+				border-bottom: 1px solid rgb(var(--black));
+				text-align: center;
+			}
+			.title h1 {
+				margin: 0.4em 0;
+				line-height: 1.25;
+			}
+			.dek {
+				margin: 0;
+				color: rgb(var(--gray));
+				font-size: 1.1em;
+			}
+			.last-updated-on {
+				margin-top: 0.5em;
+				font-style: italic;
 			}
 			.hero-image img {
 				display: block;
-				margin: 0 auto;
-				border-radius: 12px;
-				box-shadow: var(--box-shadow);
+				width: 100%;
+				margin-bottom: 2.5em;
 			}
 			.prose {
-				width: 720px;
-				max-width: calc(100% - 2em);
-				margin: auto;
-				padding: 1em;
-				color: rgb(var(--gray-dark));
+				max-width: 680px;
+				margin: 0 auto;
 			}
-			.title {
-				margin-bottom: 1em;
-				padding: 1em 0;
-				text-align: center;
+			.prose :global(img) {
+				display: block;
+				margin: 2em auto;
+			}
+			/* Drop cap on the opening paragraph; flow-root keeps a short paragraph from wrapping the next one. */
+			.prose > :global(p:first-of-type) {
+				display: flow-root;
+			}
+			.prose > :global(p:first-of-type)::first-letter {
+				float: left;
+				margin: 0.1em 0.12em 0 0;
+				color: var(--accent);
+				font-family: var(--font-serif);
+				font-size: 3.4em;
+				font-weight: 700;
 				line-height: 1;
-			}
-			.title h1 {
-				margin: 0 0 0.5em 0;
-			}
-			.date {
-				margin-bottom: 0.5em;
-				color: rgb(var(--gray));
-			}
-			.last-updated-on {
-				font-style: italic;
 			}
 		</style>
 	</head>
@@ -59,22 +71,24 @@ const { title, description, pubDate, updatedDate, heroImage } = Astro.props;
 		<Header />
 		<main>
 			<article>
-				<div class="hero-image">
-					{heroImage && <Image width={1020} height={510} src={heroImage} alt="" />}
+				<div class="title">
+					<p class="meta">
+						<FormattedDate date={pubDate} />
+					</p>
+					<h1>{title}</h1>
+					<p class="dek">{description}</p>
+					{updatedDate && (
+						<p class="meta last-updated-on">
+							Last updated on <FormattedDate date={updatedDate} />
+						</p>
+					)}
 				</div>
-				<div class="prose">
-					<div class="title">
-						<div class="date">
-							<FormattedDate date={pubDate} />
-							{updatedDate && (
-								<div class="last-updated-on">
-									Last updated on <FormattedDate date={updatedDate} />
-								</div>
-							)}
-						</div>
-						<h1>{title}</h1>
-						<hr />
+				{heroImage && (
+					<div class="hero-image">
+						<Image width={1440} height={720} src={heroImage} alt="" />
 					</div>
+				)}
+				<div class="prose">
 					<slot />
 				</div>
 			</article>
