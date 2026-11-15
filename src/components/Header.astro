@@ -5,78 +5,71 @@ import HeaderLink from './HeaderLink.astro';
 ---
 
 <header>
+	<a class="site-title" href="/">{SITE_TITLE}</a>
 	<nav>
-		<h2>
-			<a href="/">{SITE_TITLE}</a>
-		</h2>
-		<div class="internal-links">
-			<HeaderLink href="/">Home</HeaderLink>
-			<HeaderLink href="/blog">Blog</HeaderLink>
-			<HeaderLink href="/about">About</HeaderLink>
-		</div>
-		<div class="social-links">
-			<a href={INSTAGRAM_URL} target="_blank">
-				<span class="sr-only">Instagram에서 pawn.wood 팔로우하기</span>
-				<InstagramIcon />
-			</a>
-		</div>
+		<HeaderLink href="/">Home</HeaderLink>
+		<HeaderLink href="/blog">Blog</HeaderLink>
+		<HeaderLink href="/about">About</HeaderLink>
+		<a class="social-link" href={INSTAGRAM_URL} target="_blank">
+			<span class="sr-only">Instagram에서 pawn.wood 팔로우하기</span>
+			<InstagramIcon />
+		</a>
 	</nav>
 </header>
 <style>
+	/* Newspaper masthead: centered name above a menu framed by rules. */
 	header {
-		margin: 0;
-		padding: 0 1em;
-		background: var(--paper);
-		box-shadow: 0 2px 8px rgba(var(--black), 5%);
+		width: 960px;
+		max-width: calc(100% - 2em);
+		margin: 0 auto;
+		padding-top: 2em;
+		text-align: center;
 	}
-	h2 {
-		margin: 0;
-		font-size: 1em;
-	}
-
-	h2 a,
-	h2 a.active {
+	.site-title {
+		display: block;
+		padding-bottom: 0.4em;
+		color: rgb(var(--black));
+		font-family: var(--font-serif);
+		font-size: 2.2em;
+		font-weight: 700;
+		line-height: 1.2;
 		text-decoration: none;
 	}
 	nav {
 		display: flex;
 		align-items: center;
-		justify-content: space-between;
+		justify-content: center;
+		gap: 1.5em;
+		border-top: 1px solid rgb(var(--black));
+		border-bottom: 1px solid var(--rule);
 	}
-	nav a {
-		padding: 1em 0.5em;
+	nav :global(a) {
+		padding: 0.6em 0;
 		color: rgb(var(--black));
-		border-bottom: 4px solid transparent;
+		font-size: 0.8em;
+		font-weight: 700;
+		letter-spacing: 0.12em;
+		text-transform: uppercase;
 		text-decoration: none;
 	}
-	nav a.active {
-		text-decoration: none;
-		border-bottom-color: var(--accent);
+	nav :global(a.active) {
+		color: var(--accent);
+		text-decoration: underline;
+		text-underline-offset: 0.4em;
 	}
-	.social-links,
-	.social-links a {
+	.social-link {
 		display: flex;
 	}
+	.social-link :global(svg) {
+		width: 1.2em;
+		height: 1.2em;
+	}
 	@media (max-width: 720px) {
-		.social-links {
-			display: none;
+		header {
+			padding-top: 1.25em;
 		}
-		/* Stack the site name above the menu so neither wraps on phones. */
-		nav {
-			flex-direction: column;
-			align-items: flex-start;
-		}
-		h2 a {
-			display: block;
-			padding: 0.75em 0 0.25em;
-		}
-		.internal-links {
-			display: flex;
-			gap: 0.5em;
-			margin-left: -0.5em;
-		}
-		.internal-links a {
-			padding: 0.5em;
+		.site-title {
+			font-size: 1.5em;
 		}
 	}
 </style>
