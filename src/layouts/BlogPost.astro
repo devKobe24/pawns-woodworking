@@ -82,7 +82,8 @@ const { title, description, pubDate, updatedDate, heroImage, slug } = Astro.prop
 						<FormattedDate date={pubDate} />
 						{slug && (
 							<span class="views" data-slug={slug} hidden>
-								· 조회 <span class="count" />
+								{' · 조회 '}
+								<span class="count" />
 							</span>
 						)}
 					</p>
