@@ -14,6 +14,8 @@ const blog = defineCollection({
 			pubDate: z.coerce.date(),
 			updatedDate: z.coerce.date().optional(),
 			heroImage: z.optional(image()),
+			// true keeps the post out of the site, RSS and sitemap.
+			draft: z.boolean().default(false),
 		}),
 });
 
