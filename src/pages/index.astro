@@ -32,9 +32,12 @@ const [latest, ...older] = await getPosts();
 				text-align: center;
 				text-decoration: none;
 			}
+			/* Astro won't upscale, so a small source keeps its own ratio; fix the 2:1 frame here. */
 			.cover img {
 				display: block;
 				width: 100%;
+				aspect-ratio: 2 / 1;
+				object-fit: cover;
 				margin-bottom: 1.5em;
 			}
 			.cover h2 {
