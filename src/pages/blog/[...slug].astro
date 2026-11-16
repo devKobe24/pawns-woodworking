@@ -1,5 +1,6 @@
 ---
 import { type CollectionEntry, render } from 'astro:content';
+import Comments from '../../components/Comments.astro';
 import LikeButton from '../../components/LikeButton.astro';
 import BlogPost from '../../layouts/BlogPost.astro';
 import { getPosts } from '../../posts';
@@ -20,4 +21,5 @@ const { Content } = await render(post);
 <BlogPost {...post.data} slug={post.id}>
 	<Content />
 	<LikeButton slug={post.id} />
+	<Comments slug={post.id} />
 </BlogPost>
