@@ -44,9 +44,12 @@ const { title, description, pubDate, updatedDate, heroImage, slug } = Astro.prop
 				margin-top: 0.5em;
 				font-style: italic;
 			}
+			/* Astro won't upscale, so a small source keeps its own ratio; fix the 2:1 frame here. */
 			.hero-image img {
 				display: block;
 				width: 100%;
+				aspect-ratio: 2 / 1;
+				object-fit: cover;
 				margin-bottom: 2.5em;
 			}
 			.prose {
