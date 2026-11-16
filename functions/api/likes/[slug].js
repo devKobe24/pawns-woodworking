@@ -1,6 +1,6 @@
 // GET /api/likes/:slug returns { count, liked }; POST likes the post, DELETE takes the like back.
 // A browser is identified by the pw_visitor cookie; IP hashes cap how many likes one network can add.
-import { isSameOrigin, postExists } from '../../../server/blog.js';
+import { hashIp, isSameOrigin, postExists } from '../../../server/blog.js';
 
 const COOKIE = 'pw_visitor';
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
@@ -10,14 +10,6 @@ const MAX_LIKES_PER_IP = 20;
 function readVisitor(request) {
 	const match = (request.headers.get('Cookie') ?? '').match(/(?:^|;\s*)pw_visitor=([^;]+)/);
 	return match && UUID.test(match[1]) ? match[1] : null;
-}
-
-async function hashIp(request, env) {
-	const salt = await env.DB.prepare("SELECT value FROM secrets WHERE name = 'ip_salt'").first('value');
-	if (!salt) throw new Error('ip_salt is missing; run the D1 migrations');
-	const ip = request.headers.get('CF-Connecting-IP') ?? '';
-	const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(salt + ip));
-	return [...new Uint8Array(digest)].map((b) => b.toString(16).padStart(2, '0')).join('');
 }
 
 export async function onRequest({ request, params, env }) {

@@ -1,0 +1,245 @@
+---
+import { TURNSTILE_SITE_KEY } from '../consts';
+
+interface Props {
+	slug: string;
+}
+
+const { slug } = Astro.props;
+---
+
+<section class="comments" data-slug={slug} hidden>
+	<h2>댓글 <span class="count"></span></h2>
+	<ol></ol>
+	<p class="empty" hidden>첫 댓글을 남겨 주세요.</p>
+	<form>
+		<div class="row">
+			<label>
+				이름
+				<input name="name" required maxlength="20" autocomplete="nickname" />
+			</label>
+			<label>
+				비밀번호
+				<input
+					name="password"
+					type="password"
+					required
+					minlength="4"
+					maxlength="50"
+					autocomplete="new-password"
+				/>
+			</label>
+		</div>
+		<label>
+			댓글
+			<textarea name="body" required maxlength="1000" rows="4"></textarea>
+		</label>
+		<p class="hint">비밀번호는 내 댓글을 지울 때 필요합니다.</p>
+		<div class="cf-turnstile" data-sitekey={TURNSTILE_SITE_KEY}></div>
+		<button type="submit">댓글 남기기</button>
+		<p class="status" role="status"></p>
+	</form>
+	<template>
+		<li>
+			<p class="byline">
+				<strong class="name"></strong>
+				<time></time>
+				<button type="button" class="delete">삭제</button>
+			</p>
+			<p class="body"></p>
+		</li>
+	</template>
+</section>
+<script is:inline src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+<style>
+	.comments {
+		margin-top: 4em;
+		padding-top: 2em;
+		border-top: 1px solid rgb(var(--black));
+	}
+	h2 {
+		font-size: 1.4em;
+	}
+	ol {
+		margin: 0 0 2em;
+		padding: 0;
+		list-style: none;
+	}
+	li {
+		padding: 1em 0;
+		border-bottom: 1px solid var(--rule);
+	}
+	.byline {
+		display: flex;
+		align-items: baseline;
+		gap: 0.75em;
+		margin: 0;
+		font-size: 0.85em;
+	}
+	time,
+	.hint,
+	.empty {
+		color: rgb(var(--gray));
+	}
+	.body {
+		margin: 0.25em 0 0;
+		white-space: pre-line;
+	}
+	.delete {
+		margin-left: auto;
+		padding: 0;
+		border: 0;
+		background: none;
+		color: rgb(var(--gray));
+		font: inherit;
+		text-decoration: underline;
+		cursor: pointer;
+	}
+	form {
+		display: grid;
+		gap: 0.75em;
+	}
+	.row {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 0.75em;
+	}
+	label {
+		display: grid;
+		gap: 0.25em;
+		font-size: 0.85em;
+		font-weight: 700;
+	}
+	input,
+	textarea {
+		box-sizing: border-box;
+		width: 100%;
+		padding: 0.5em 0.75em;
+		border: 1px solid var(--rule);
+		border-radius: 4px;
+		background: #fff;
+		color: inherit;
+		font-family: inherit;
+		font-weight: 400;
+	}
+	.hint,
+	.status {
+		margin: 0;
+		font-size: 0.85em;
+	}
+	form button {
+		justify-self: start;
+		padding: 0.5em 1.25em;
+		border: 0;
+		border-radius: 999px;
+		background: var(--accent);
+		color: var(--paper);
+		font: inherit;
+		font-weight: 700;
+		cursor: pointer;
+	}
+	form button:disabled {
+		opacity: 0.6;
+		cursor: wait;
+	}
+	@media (max-width: 720px) {
+		.row {
+			grid-template-columns: 1fr;
+		}
+	}
+</style>
+<script>
+	// Lists comments and handles posting and deleting. Stays hidden if the API is unavailable.
+	type Comment = { id: number; name: string; body: string; createdAt: number };
+
+	const section = document.querySelector<HTMLElement>('.comments');
+	if (section) {
+		const url = `/api/comments/${section.dataset.slug}`;
+		const list = section.querySelector('ol')!;
+		const empty = section.querySelector<HTMLElement>('.empty')!;
+		const template = section.querySelector('template')!;
+		const form = section.querySelector('form')!;
+		const submit = form.querySelector('button')!;
+		const status = form.querySelector('.status')!;
+		const errors: Record<number, string> = {
+			400: '이름, 비밀번호(4자 이상), 댓글 내용을 확인해 주세요.',
+			403: '스팸 방지 확인에 실패했습니다. 다시 시도해 주세요.',
+			429: '짧은 시간에 댓글을 너무 많이 남겼습니다. 10분 뒤에 다시 시도해 주세요.',
+		};
+
+		const call = (method: string, body?: object) =>
+			fetch(url, {
+				method,
+				headers: body && { 'Content-Type': 'application/json' },
+				body: body && JSON.stringify(body),
+			}).then((res) => (res.ok ? res.json() : Promise.reject(res.status)));
+
+		const refresh = () => {
+			section.querySelector('h2 .count')!.textContent = String(list.children.length);
+			empty.hidden = list.children.length > 0;
+		};
+
+		const add = (comment: Comment) => {
+			const item = template.content.firstElementChild!.cloneNode(true) as HTMLElement;
+			const date = new Date(comment.createdAt * 1000);
+			const time = item.querySelector('time')!;
+			time.dateTime = date.toISOString();
+			time.textContent = date.toLocaleString('ko-KR', { dateStyle: 'medium', timeStyle: 'short' });
+			item.querySelector('.name')!.textContent = comment.name;
+			item.querySelector('.body')!.textContent = comment.body;
+			item.querySelector('.delete')!.addEventListener('click', () => {
+				const password = prompt('댓글을 쓸 때 정한 비밀번호를 입력해 주세요.');
+				if (!password) return;
+				call('DELETE', { id: comment.id, password })
+					.then(() => {
+						item.remove();
+						refresh();
+					})
+					.catch((code) =>
+						alert(code === 403 ? '비밀번호가 맞지 않습니다.' : '삭제하지 못했습니다. 잠시 후 다시 시도해 주세요.'),
+					);
+			});
+			list.append(item);
+		};
+
+		call('GET')
+			.then(({ comments }: { comments: Comment[] }) => {
+				comments.forEach(add);
+				refresh();
+				section.hidden = false;
+			})
+			.catch(() => {});
+
+		form.addEventListener('submit', (event) => {
+			event.preventDefault();
+			const data = new FormData(form);
+			const token = data.get('cf-turnstile-response');
+			if (!token) {
+				status.textContent = '스팸 방지 확인이 끝날 때까지 잠시 기다려 주세요.';
+				return;
+			}
+			submit.disabled = true;
+			status.textContent = '';
+			call('POST', {
+				name: data.get('name'),
+				password: data.get('password'),
+				body: data.get('body'),
+				token,
+			})
+				.then(({ comment }: { comment: Comment }) => {
+					add(comment);
+					refresh();
+					form.querySelector('textarea')!.value = '';
+					status.textContent = '댓글을 남겼습니다.';
+				})
+				.catch((code) => {
+					status.textContent = errors[code] ?? '댓글을 남기지 못했습니다. 잠시 후 다시 시도해 주세요.';
+				})
+				.finally(() => {
+					submit.disabled = false;
+					// Turnstile tokens are single-use, so get a fresh one for the next comment.
+					(window as Window & { turnstile?: { reset(): void } }).turnstile?.reset();
+				});
+		});
+	}
+</script>
