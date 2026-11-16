@@ -4,6 +4,7 @@ description: '목재가 습도에 따라 수분을 머금고 내뱉으며 방향
 pubDate: '2026-11-15T14:13'
 heroImage: '../images/water-and-wood.png'
 draft: false
+tags: ['목재', '함수율', '수축팽창']
 ---
 
 오늘은 '물과 나무'에 대하여 공부했습니다.

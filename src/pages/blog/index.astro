@@ -3,22 +3,34 @@ import BaseHead from '../../components/BaseHead.astro';
 import Footer from '../../components/Footer.astro';
 import Header from '../../components/Header.astro';
 import PostList from '../../components/PostList.astro';
+import TagList from '../../components/TagList.astro';
 import { SITE_DESCRIPTION, SITE_TITLE } from '../../consts';
-import { getPosts } from '../../posts';
+import { countTags, getPosts } from '../../posts';
 
 const posts = await getPosts();
+const tags = countTags(posts);
 ---
 
 <!doctype html>
 <html lang="ko">
 	<head>
 		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
+		<style>
+			nav {
+				margin: 1.5em 0 1em;
+			}
+		</style>
 	</head>
 	<body>
 		<Header />
 		<main>
 			<p class="meta">Blog</p>
 			<h1>모든 글</h1>
+			{tags.length > 0 && (
+				<nav aria-label="태그">
+					<TagList tags={tags.map(([name]) => name)} counts={new Map(tags)} />
+				</nav>
+			)}
 			{posts.length === 0 && <p>아직 발행한 글이 없습니다. 첫 목공 기록을 준비하고 있습니다.</p>}
 			<PostList posts={posts} />
 		</main>

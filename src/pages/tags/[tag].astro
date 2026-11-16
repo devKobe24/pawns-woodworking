@@ -1,0 +1,44 @@
+---
+import BaseHead from '../../components/BaseHead.astro';
+import Footer from '../../components/Footer.astro';
+import Header from '../../components/Header.astro';
+import PostList from '../../components/PostList.astro';
+import TagList from '../../components/TagList.astro';
+import { SITE_TITLE } from '../../consts';
+import { countTags, getPosts } from '../../posts';
+
+export async function getStaticPaths() {
+	const posts = await getPosts();
+	const tags = countTags(posts);
+	return tags.map(([tag]) => ({
+		params: { tag },
+		props: { tag, tags, posts: posts.filter((post) => post.data.tags.includes(tag)) },
+	}));
+}
+
+const { tag, tags, posts } = Astro.props;
+---
+
+<!doctype html>
+<html lang="ko">
+	<head>
+		<BaseHead title={`#${tag}`} description={`${SITE_TITLE}의 '${tag}' 태그 글 ${posts.length}편`} />
+		<style>
+			nav {
+				margin: 1.5em 0 1em;
+			}
+		</style>
+	</head>
+	<body>
+		<Header />
+		<main>
+			<p class="meta">Tag · {posts.length}편</p>
+			<h1>#{tag}</h1>
+			<nav aria-label="태그">
+				<TagList tags={tags.map(([name]) => name)} counts={new Map(tags)} current={tag} />
+			</nav>
+			<PostList posts={posts} />
+		</main>
+		<Footer />
+	</body>
+</html>

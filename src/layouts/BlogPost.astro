@@ -5,11 +5,12 @@ import BaseHead from '../components/BaseHead.astro';
 import Footer from '../components/Footer.astro';
 import FormattedDate from '../components/FormattedDate.astro';
 import Header from '../components/Header.astro';
+import TagList from '../components/TagList.astro';
 
 // slug is set for blog posts only; it turns on the view counter.
 type Props = CollectionEntry<'blog'>['data'] & { slug?: string };
 
-const { title, description, pubDate, updatedDate, heroImage, slug } = Astro.props;
+const { title, description, pubDate, updatedDate, heroImage, tags, slug } = Astro.props;
 ---
 
 <html lang="ko">
@@ -39,6 +40,11 @@ const { title, description, pubDate, updatedDate, heroImage, slug } = Astro.prop
 				margin: 0;
 				color: rgb(var(--gray));
 				font-size: 1.1em;
+			}
+			.tags {
+				display: flex;
+				justify-content: center;
+				margin-top: 1.25em;
 			}
 			.last-updated-on {
 				margin-top: 0.5em;
@@ -92,6 +98,11 @@ const { title, description, pubDate, updatedDate, heroImage, slug } = Astro.prop
 					</p>
 					<h1>{title}</h1>
 					<p class="dek">{description}</p>
+					{tags.length > 0 && (
+						<div class="tags">
+							<TagList tags={tags} />
+						</div>
+					)}
 					{updatedDate && (
 						<p class="meta last-updated-on">
 							Last updated on <FormattedDate date={updatedDate} />
