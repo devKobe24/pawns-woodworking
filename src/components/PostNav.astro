@@ -1,0 +1,56 @@
+---
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+	older?: CollectionEntry<'blog'>;
+	newer?: CollectionEntry<'blog'>;
+}
+
+const { older, newer } = Astro.props;
+---
+
+{(older || newer) && (
+	<nav aria-label="이전 글과 다음 글">
+		{older && (
+			<a class="older" href={`/blog/${older.id}/`}>
+				<span class="meta">← 이전 글</span>
+				<span class="title">{older.data.title}</span>
+			</a>
+		)}
+		{newer && (
+			<a class="newer" href={`/blog/${newer.id}/`}>
+				<span class="meta">다음 글 →</span>
+				<span class="title">{newer.data.title}</span>
+			</a>
+		)}
+	</nav>
+)}
+<style>
+	nav {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 1em;
+		margin-top: 3em;
+		padding-top: 1.5em;
+		border-top: 1px solid var(--rule);
+	}
+	a {
+		display: grid;
+		gap: 0.3em;
+		text-decoration: none;
+	}
+	.newer {
+		grid-column: 2;
+		text-align: right;
+	}
+	.title {
+		color: rgb(var(--black));
+		font-family: var(--font-serif);
+		font-size: 1.15em;
+		font-weight: 700;
+		line-height: 1.4;
+	}
+	a:hover .title {
+		color: var(--accent);
+	}
+</style>
