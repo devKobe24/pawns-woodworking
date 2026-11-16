@@ -1,4 +1,6 @@
 ---
+import { Image } from 'astro:assets';
+import portrait from '../content/blog/images/Furniture_Maker_Pawn.jpg';
 import Layout from '../layouts/BlogPost.astro';
 ---
 
@@ -7,6 +9,8 @@ import Layout from '../layouts/BlogPost.astro';
 	description="나무로 책상, 의자, 테이블 같은 가구를 직접 만드는 가구 제작자 Pawn을 소개합니다."
 	pubDate={new Date('2026-11-14')}
 >
+	<Image src={portrait} alt="흑백 포토 부스 사진 여섯 컷이 담긴 인화지를 손에 든 모습. 사진 속 Pawn이 흰 티셔츠 차림으로 서 있습니다." />
+
 	<p>
 		저는 나무를 활용해 책상, 의자, 테이블 등 다양한 가구를 직접 만드는 가구 제작자입니다. 어떤
 		나무를 사용할지 고민하는 것부터 디자인, 설계, 재단, 조립, 마감까지 제 손으로 하나하나 작업하고
