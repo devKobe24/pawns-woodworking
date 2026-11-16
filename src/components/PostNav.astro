@@ -31,9 +31,8 @@ const { older, newer } = Astro.props;
 		grid-template-columns: 1fr 1fr;
 		gap: 1em;
 		margin-top: 3em;
-		padding: 1.5em 0;
+		padding-top: 1.5em;
 		border-top: 1px solid var(--rule);
-		border-bottom: 1px solid var(--rule);
 	}
 	a {
 		display: grid;
@@ -53,13 +52,5 @@ const { older, newer } = Astro.props;
 	}
 	a:hover .title {
 		color: var(--accent);
-	}
-	@media (max-width: 720px) {
-		nav {
-			grid-template-columns: 1fr;
-		}
-		.newer {
-			grid-column: 1;
-		}
 	}
 </style>
