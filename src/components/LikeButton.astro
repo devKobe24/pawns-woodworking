@@ -1,0 +1,69 @@
+---
+interface Props {
+	slug: string;
+}
+
+const { slug } = Astro.props;
+---
+
+<div class="like" data-slug={slug} hidden>
+	<button type="button" aria-pressed="false">
+		<span class="heart" aria-hidden="true">♥</span>
+		좋아요 <span class="count"></span>
+	</button>
+</div>
+<style>
+	.like {
+		margin-top: 3em;
+		text-align: center;
+	}
+	button {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.4em;
+		padding: 0.5em 1.25em;
+		border: 1px solid var(--accent);
+		border-radius: 999px;
+		background: transparent;
+		color: var(--accent);
+		font: inherit;
+		font-weight: 700;
+		cursor: pointer;
+	}
+	button[aria-pressed='true'] {
+		background: var(--accent);
+		color: var(--paper);
+	}
+	button:disabled {
+		opacity: 0.6;
+		cursor: wait;
+	}
+</style>
+<script>
+	// Shows the like count and toggles this browser's like. Stays hidden if the API is unavailable.
+	const box = document.querySelector<HTMLElement>('.like');
+	if (box) {
+		const button = box.querySelector('button')!;
+		const url = `/api/likes/${box.dataset.slug}`;
+		const send = (method: string) =>
+			fetch(url, { method }).then((res) => (res.ok ? res.json() : Promise.reject(res.status)));
+		const show = ({ count, liked }: { count: number; liked: boolean }) => {
+			box.querySelector('.count')!.textContent = count.toLocaleString('ko-KR');
+			button.setAttribute('aria-pressed', String(liked));
+			box.hidden = false;
+		};
+
+		send('GET')
+			.then(show)
+			.catch(() => {});
+		button.addEventListener('click', () => {
+			button.disabled = true;
+			send(button.getAttribute('aria-pressed') === 'true' ? 'DELETE' : 'POST')
+				.then(show)
+				.catch(() => {})
+				.finally(() => {
+					button.disabled = false;
+				});
+		});
+	}
+</script>

@@ -1,20 +1,16 @@
 // GET /api/views/:slug returns a post's view count; POST adds one view and returns the new count.
-const SLUG = /^[a-z0-9-]+$/;
+import { isSameOrigin, postExists } from '../../../server/blog.js';
 
 export async function onRequest({ request, params, env }) {
 	const { method } = request;
 	if (method !== 'GET' && method !== 'POST') {
 		return new Response(null, { status: 405, headers: { Allow: 'GET, POST' } });
 	}
-	// Only count views sent by this site's own pages.
-	if (method === 'POST' && request.headers.get('Origin') !== new URL(request.url).origin) {
+	if (method === 'POST' && !isSameOrigin(request)) {
 		return Response.json({ error: 'forbidden' }, { status: 403 });
 	}
-
-	// Only real posts get a row: the slug must match a built /blog/<slug>/ page.
 	const { slug } = params;
-	const page = SLUG.test(slug) && (await env.ASSETS.fetch(new URL(`/blog/${slug}/`, request.url)));
-	if (!page?.ok) {
+	if (!(await postExists(request, env, slug))) {
 		return Response.json({ error: 'not found' }, { status: 404 });
 	}
 
