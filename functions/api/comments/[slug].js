@@ -46,6 +46,23 @@ async function passedTurnstile(token, request, env) {
 	return res.ok && (await res.json()).success === true;
 }
 
+// Emails the owner about a new comment. resend.dev's test sender only delivers to the Resend account's own
+// address, so NOTIFY_EMAIL must be that address. Without RESEND_API_KEY (local dev) it does nothing.
+async function notifyOwner(request, env, slug, comment) {
+	if (!env.RESEND_API_KEY || !env.NOTIFY_EMAIL) return;
+	const res = await fetch('https://api.resend.com/emails', {
+		method: 'POST',
+		headers: { Authorization: `Bearer ${env.RESEND_API_KEY}`, 'Content-Type': 'application/json' },
+		body: JSON.stringify({
+			from: "Pawn's Woodworking <onboarding@resend.dev>",
+			to: env.NOTIFY_EMAIL,
+			subject: `새 댓글: ${comment.name.replace(/\s+/g, ' ')}`,
+			text: `${comment.name}님이 댓글을 남겼습니다.\n${new URL(`/blog/${slug}/`, request.url)}\n\n${comment.body}`,
+		}),
+	});
+	if (!res.ok) throw new Error(`Resend ${res.status}: ${await res.text()}`);
+}
+
 // Trimmed string within [min, max] characters, or null.
 function text(value, min, max) {
 	if (typeof value !== 'string') return null;
@@ -53,7 +70,7 @@ function text(value, min, max) {
 	return trimmed.length >= min && trimmed.length <= max ? trimmed : null;
 }
 
-async function addComment(request, env, slug, input) {
+async function addComment(request, env, slug, input, waitUntil) {
 	const name = text(input.name, 1, LIMITS.name);
 	const body = text(input.body, 1, LIMITS.body);
 	const password = typeof input.password === 'string' ? input.password : '';
@@ -77,6 +94,8 @@ async function addComment(request, env, slug, input) {
 	)
 		.bind(slug, name, body, salt, await hashPassword(password, salt), ipHash)
 		.first();
+	// After the response, so a slow or failed email never blocks or loses the comment.
+	waitUntil(notifyOwner(request, env, slug, comment).catch((err) => console.error('comment email failed', err)));
 	return Response.json({ comment }, { status: 201, headers: noStore });
 }
 
@@ -95,7 +114,7 @@ async function deleteComment(env, slug, input) {
 	return Response.json({ deleted: true }, { headers: noStore });
 }
 
-export async function onRequest({ request, params, env }) {
+export async function onRequest({ request, params, env, waitUntil }) {
 	const { method } = request;
 	if (!['GET', 'POST', 'DELETE'].includes(method)) {
 		return new Response(null, { status: 405, headers: { Allow: 'GET, POST, DELETE' } });
@@ -120,5 +139,5 @@ export async function onRequest({ request, params, env }) {
 		return fail(400, 'invalid JSON');
 	}
 	if (!input || typeof input !== 'object') return fail(400, 'invalid JSON');
-	return method === 'POST' ? addComment(request, env, slug, input) : deleteComment(env, slug, input);
+	return method === 'POST' ? addComment(request, env, slug, input, waitUntil) : deleteComment(env, slug, input);
 }
