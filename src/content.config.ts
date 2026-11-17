@@ -14,6 +14,8 @@ const blog = defineCollection({
 			pubDate: z.coerce.date(),
 			updatedDate: z.coerce.date().optional(),
 			heroImage: z.optional(image()),
+			// One word each (no spaces or slashes): every tag becomes a /tags/<tag>/ page.
+			tags: z.array(z.string().regex(/^[^\s/]+$/)).default([]),
 			// true keeps the post out of the site, RSS and sitemap.
 			draft: z.boolean().default(false),
 		}),

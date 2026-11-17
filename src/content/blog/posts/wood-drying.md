@@ -4,6 +4,7 @@ description: '목재 속 자유수와 결합수의 차이, 원목이 마르면�
 pubDate: '2026-11-16T16:13'
 heroImage: '../images/Wood-Drying-End-Splits.jpg'
 draft: false
+tags: ['목재', '함수율', '건조']
 ---
 
 제재목(製材木)으로 사용되는 교목(喬木)에는 두 종류의 물이 포함되어 있습니다.
